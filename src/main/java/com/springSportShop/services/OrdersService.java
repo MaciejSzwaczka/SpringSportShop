@@ -35,6 +35,10 @@ public class OrdersService {
     }
     @Transactional
    public void save(Order order){
+       for(Product prod:order.getProducts())
+       {
+           prod.setQuantity(prod.getQuantity()-1);
+       }
       entityManager.persist(order);
    }
    public List<Order> getAll(){
@@ -42,9 +46,6 @@ public class OrdersService {
    }
    public Order getOrder(Long id)
    {
-       List<Product> prods=new ArrayList<Product>();
-       prods.add(new Product());
-       prods.add(new Product());
-       return new Order(null,prods,new Date());
+        return entityManager.find(Order.class, id);
    }
 }

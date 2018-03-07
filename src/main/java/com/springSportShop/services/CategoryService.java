@@ -16,6 +16,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.Persistence;
 import org.hibernate.Criteria;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Root;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -67,14 +70,14 @@ public class CategoryService {
                     Category superCategoryWomen=new Category(null,"Dla kobiet",null,new ArrayList<>(),new ArrayList<>());
                     ArrayList<Category> subCategoriesForMen=new ArrayList<>();
                     ArrayList<Category> subCategoriesForWomen=new ArrayList<>();
-                    subCategoriesForMen.add(new Category(null,"Obuwie meskie",superCategoryMen,new ArrayList<>(),new ArrayList<>()));
+                    subCategoriesForMen.add(new Category(null,"Buty Męskie",superCategoryMen,new ArrayList<>(),new ArrayList<>()));
                     subCategoriesForMen.add(new Category(null,"Odziez meska",superCategoryMen,new ArrayList<>(),new ArrayList<>()));
                     subCategoriesForWomen.add(new Category(null,"Odziez damska",superCategoryWomen,new ArrayList<>(),new ArrayList<>()));
-                    subCategoriesForWomen.add(new Category(null,"Obuwie damskie",superCategoryWomen,new ArrayList<>(),new ArrayList<>()));
+                    subCategoriesForWomen.add(new Category(null,"Buty Damskie",superCategoryWomen,new ArrayList<>(),new ArrayList<>()));
                     superCategoryMen.setSubCategories(subCategoriesForMen);
                     superCategoryWomen.setSubCategories(subCategoriesForWomen);
-                    entityManager.merge(superCategoryMen);
-                    entityManager.merge(superCategoryWomen);
+                    entityManager.persist(superCategoryMen);
+                    entityManager.persist(superCategoryWomen);
                 }
             });
         }
@@ -84,7 +87,21 @@ public class CategoryService {
     }
     public Category mapNameOfCatToCat(String name)
     {
-        return entityManager.createNamedQuery(Category.FIND_CAT_BY_NAME, Category.class).setParameter("cat", name).getSingleResult();
+        CriteriaBuilder crit=entityManager.getCriteriaBuilder();
+        CriteriaQuery<Category> query=crit.createQuery(Category.class);
+        Root<Category> root = query.from(Category.class);
+        ParameterExpression<String> nameParam=crit.parameter(String.class);
+        query.select(root).where(crit.like(root.get("name"),nameParam));
+        TypedQuery<Category> typedQuery=entityManager.createQuery(query);
+        return typedQuery.setParameter(nameParam,name).getSingleResult();
+        /*List<Category> cats=findAll();
+        for(Category cat: cats)
+        {
+            if(cat.getName().equals(name))
+            {
+                return cat;
+            }
+        }*/
     }
     @Transactional
     public Boolean addCategory(Category cat)

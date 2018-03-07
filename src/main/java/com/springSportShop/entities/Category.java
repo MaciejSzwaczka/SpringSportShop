@@ -35,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @NoArgsConstructor
 @NamedQueries(value = {
     @NamedQuery(name=Category.FIND_ALL,query="FROM Category b"),
-    @NamedQuery(name=Category.FIND_CAT_BY_NAME,query="FROM Category where name=:cat")
+    @NamedQuery(name=Category.FIND_CAT_BY_NAME,query="FROM Category b where b.name=:cat ")
 })
 public class Category implements Serializable {
     

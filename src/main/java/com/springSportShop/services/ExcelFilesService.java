@@ -70,6 +70,7 @@ public class ExcelFilesService {
             String name=row.getCell(indsOfFields.get("Nazwa")).getStringCellValue();
             double price=row.getCell(indsOfFields.get("Cena")).getNumericCellValue();
             String season=row.getCell(indsOfFields.get("Sezon")).getStringCellValue();
+            String description=row.getCell(indsOfFields.get("Opis")).getStringCellValue();
             String colour=row.getCell(indsOfFields.get("Kolor")).getStringCellValue();
             String imagesString=row.getCell(indsOfFields.get("Obrazy")).getStringCellValue();
             String sizesString=row.getCell(indsOfFields.get("Rozmiar")).getStringCellValue();
@@ -93,6 +94,7 @@ public class ExcelFilesService {
             createdProduct.setColour(colour);
             createdProduct.setSeason(season);
             createdProduct.setQuantity(200);
+            createdProduct.setCategory(categoryService.mapNameOfCatToCat(description));
             addedProducts.add(createdProduct);
         }
         return addedProducts;

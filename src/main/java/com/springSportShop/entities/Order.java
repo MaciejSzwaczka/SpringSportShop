@@ -9,6 +9,7 @@ import java.io.Serializable;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import static javax.persistence.CascadeType.MERGE;
 import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,7 +38,7 @@ public class Order implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToMany
+    @ManyToMany(cascade={MERGE})
     private List<Product> products=new ArrayList<>();
     
     private Date dateOfOrder;

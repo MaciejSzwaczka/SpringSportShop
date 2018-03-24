@@ -66,7 +66,7 @@ public class ExcelFilesService {
         {
             row=sheet.getRow(i);
             Product createdProduct=new Product();
-            int amount=/*(int)row.getCell(indsOfFields.get("Ilość")).getNumericCellValue()*/200;
+            int amount=200;
             String name=row.getCell(indsOfFields.get("Nazwa")).getStringCellValue();
             double price=row.getCell(indsOfFields.get("Cena")).getNumericCellValue();
             String season=row.getCell(indsOfFields.get("Sezon")).getStringCellValue();
@@ -76,11 +76,6 @@ public class ExcelFilesService {
             String sizesString=row.getCell(indsOfFields.get("Rozmiar")).getStringCellValue();
             String sizesStrings[]=sizesString.split(",");
             List<Size> sizes=new ArrayList<>();
-            for(String size:sizesStrings)
-            {
-                System.out.print(size);
-                sizes.add(new Size(null,size,createdProduct));
-            }
             String[] imagesURLs=imagesString.split(","); 
             ArrayList<Photo> images=new ArrayList<>();
             for(String str:imagesURLs)

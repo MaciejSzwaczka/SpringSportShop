@@ -16,6 +16,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.Persistence;
 import org.hibernate.Criteria;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
@@ -85,6 +86,7 @@ public class CategoryService {
             System.out.println("no update");
         }
     }
+    @Transactional
     public Category mapNameOfCatToCat(String name)
     {
         CriteriaBuilder crit=entityManager.getCriteriaBuilder();
@@ -93,15 +95,16 @@ public class CategoryService {
         ParameterExpression<String> nameParam=crit.parameter(String.class);
         query.select(root).where(crit.like(root.get("name"),nameParam));
         TypedQuery<Category> typedQuery=entityManager.createQuery(query);
-        return typedQuery.setParameter(nameParam,name).getSingleResult();
-        /*List<Category> cats=findAll();
-        for(Category cat: cats)
+        try{
+            return typedQuery.setParameter(nameParam,name).getSingleResult();
+        }
+        catch(NoResultException e)
         {
-            if(cat.getName().equals(name))
-            {
-                return cat;
-            }
-        }*/
+            e.printStackTrace();
+            Category newCat=new Category(null,name,null,new ArrayList<>(),new ArrayList<>());
+            entityManager.persist(newCat);
+            return newCat;
+        }
     }
     @Transactional
     public Boolean addCategory(Category cat)

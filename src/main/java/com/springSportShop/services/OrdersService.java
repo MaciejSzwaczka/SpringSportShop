@@ -15,6 +15,7 @@ import java.util.Date;
 import javax.persistence.EntityTransaction;
 import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.Persistence;
+import com.springSportShop.Exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.springSportShop.entities.*;
@@ -37,7 +38,12 @@ public class OrdersService {
    public void save(Order order){
        for(Product prod:order.getProducts())
        {
+           if(prod.getQuantity()==0)
+           {
+               throw new OutOfProductsException();
+           }
            prod.setQuantity(prod.getQuantity()-1);
+           
        }
       entityManager.persist(order);
    }

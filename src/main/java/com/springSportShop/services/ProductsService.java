@@ -15,6 +15,12 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Stream;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Root;
 /**
  *
  * @author maciejszwaczka
@@ -56,4 +62,18 @@ public class ProductsService {
    {
        return entityManager.find(Product.class, id);
    }
+
+
+    public List<Product> getAllInPriceRange(Integer lowestPrice, Integer maxPrice) {
+        CriteriaBuilder crit=entityManager.getCriteriaBuilder();
+        CriteriaQuery<Product> query=crit.createQuery(Product.class);
+        Root<Product> root = query.from(Product.class);
+        ParameterExpression<Integer> minPriceParam=crit.parameter(Integer.class);
+        ParameterExpression<Integer> maxPriceParam=crit.parameter(Integer.class);
+        query.select(root).where(crit.gt(root.get("price"),maxPriceParam));
+        query.select(root).where(crit.lt(root.get("price"), maxPriceParam));
+        TypedQuery<Product> typedQuery=entityManager.createQuery(query);
+        return typedQuery.setParameter(minPriceParam,lowestPrice).
+                setParameter(maxPriceParam, maxPrice).getResultList();
+    }
 }

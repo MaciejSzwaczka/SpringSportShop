@@ -10,8 +10,12 @@ import com.springSportShop.services.OrdersService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import com.springSportShop.Exceptions.*;
 import java.util.List;
-
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+import java.net.URI;
 
 /**
  *
@@ -24,9 +28,13 @@ public class OrdersController {
     @Autowired
     private OrdersService ordersService;
     
-    public OrdersController(OrdersService service, CategoryService categoryService)
+    @Autowired
+    private UriComponentsBuilder builder;
+    
+    public OrdersController(OrdersService service,UriComponentsBuilder builder)
     {
         this.ordersService=service;    
+        this.builder=builder;
     }
     
     @GetMapping("/get")
@@ -40,8 +48,16 @@ public class OrdersController {
         return ordersService.getOrder(id);
     }
     @PostMapping("/add")
-    public void addOrder(@RequestBody Order order)
+    public ResponseEntity<Order> addOrder(@RequestBody Order order)
     {
-        ordersService.save(order);
+        try{
+            ordersService.save(order);
+            URI location=builder.path("order/"+order.getId()).build().toUri(); 
+            return ResponseEntity.created(location).body(order);
+        }
+        catch(OutOfProductsException e)
+        {
+            return ResponseEntity.unprocessableEntity().build();
+        }
     }
 }
